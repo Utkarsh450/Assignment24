@@ -1,7 +1,7 @@
 import { Server} from "socket.io";
 function setupSocketServer(httpServer) {
   const io = new Server(httpServer, {
-    cors: { origin: "https://web3-task-assignment-686y.vercel.app/" },
+    cors: { origin: "*" },
   });
   let rooms = {};
 
