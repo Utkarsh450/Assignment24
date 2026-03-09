@@ -11,7 +11,7 @@ https://web3-task-assignment-686y.vercel.app/
 
 # 🚀 Features
 
-### 👥 Room System
+## 👥 Room System
 - Create a watch party room
 - Join room using a room code
 - Real-time participant list
@@ -19,43 +19,45 @@ https://web3-task-assignment-686y.vercel.app/
 
 ---
 
-### 🎥 YouTube Video Sync
+## 🎥 YouTube Video Sync
 - Paste any YouTube link
 - Video loads for **all participants in the room**
 - Real-time playback synchronization
 
 Supported actions:
 
-- Play
-- Pause
-- Seek
-- Change video
+- ▶ Play
+- ⏸ Pause
+- ⏩ Seek
+- 🔁 Change video
 
 All participants stay **perfectly synchronized**.
 
 ---
 
-### ⚡ Real-time Communication
+## ⚡ Real-time Communication
 
 Uses **WebSockets (Socket.IO)** for real-time updates.
 
 Events handled:
 
+- `join_room`
+- `leave_room`
 - `play`
 - `pause`
 - `seek`
 - `change_video`
-- `join_room`
-- `leave_room`
 - `participants_list`
+- `sync_state`
+- `assign_role`
 
 ---
 
-### 👑 Role System
+## 👑 Role System
 
 | Role | Permissions |
 |-----|-------------|
-Host | Full control (play/pause/change video) |
+Host | Full control (play, pause, change video) |
 Participant | Watch synced video |
 
 The room creator automatically becomes the **Host**.
@@ -64,7 +66,7 @@ The room creator automatically becomes the **Host**.
 
 # 🏗 Tech Stack
 
-### Frontend
+## Frontend
 - React
 - Vite
 - TailwindCSS
@@ -72,99 +74,116 @@ The room creator automatically becomes the **Host**.
 - React YouTube
 - Socket.IO Client
 
-### Backend
+## Backend
 - Node.js
 - Express
 - Socket.IO
 
-### Deployment
-- **Frontend:** Vercel  
-- **Backend:** Node.js server
-
 ---
 
 # 📡 Architecture Overview
+
+```
 User Browser
-│
-│ WebSocket
-▼
+      │
+      │ WebSocket
+      ▼
 Socket.IO Server
-│
-│ Broadcast events
-▼
+      │
+      │ Broadcast events
+      ▼
 All users in same room
+```
+
+### Example Flow
+
+```
+User A presses Play
+        │
+        ▼
+socket.emit("play")
+        │
+        ▼
+Server broadcasts to room
+        │
+        ▼
+All clients play video at same timestamp
+```
 
 ---
 
 # 📦 Installation
 
 ## 1️⃣ Clone Repository
-git clone https://github.com/your-username/watch-party.git
 
+```bash
+git clone https://github.com/your-username/watch-party.git
+cd watch-party
+```
 
 ---
 
 ## 2️⃣ Backend Setup
 
-
+```bash
 cd backend
 npm install
 npm run dev
-
+```
 
 Server runs on:
 
-
+```
 http://localhost:3000
-
+```
 
 ---
 
 ## 3️⃣ Frontend Setup
 
-
+```bash
 cd frontend
 npm install
 npm run dev
-
+```
 
 Frontend runs on:
 
-
+```
 http://localhost:5173
-
+```
 
 ---
 
 # 🌍 Deployment
 
-### Frontend (Vercel)
+## Frontend
 
-Deployed using **Vercel**
+Deployed on **Vercel**
 
 Live URL:
 
-
+```
 https://web3-task-assignment-686y.vercel.app/
-
+```
 
 Build settings:
 
-
+```
 Framework: Vite
 Build Command: npm run build
 Output Directory: dist
-
+```
 
 ---
 
-### Backend
+## Backend
 
 Backend runs using:
 
-
-Node.js + Socket.IO server
-
+```
+Node.js + Express + Socket.IO
+```
 
 Recommended deployment platforms:
 
@@ -178,11 +197,12 @@ Recommended deployment platforms:
 
 | Event | Direction | Description |
 |------|----------|-------------|
-join_room | Client → Server | Join a watch room |
+join_room | Client → Server | Join watch party |
+leave_room | Client → Server | Leave room |
 play | Client → Server | Play video |
 pause | Client → Server | Pause video |
 seek | Client → Server | Seek video |
-change_video | Client → Server | Change YouTube video |
+change_video | Client → Server | Change video |
 participants_list | Server → Client | Update participants |
 sync_state | Server → Client | Sync video state |
 
@@ -191,9 +211,9 @@ sync_state | Server → Client | Sync video state |
 # 📈 Future Improvements
 
 - Role-based permissions (Host / Moderator)
-- Chat system
-- Persistent rooms with database
-- Authentication
+- Real-time chat
+- Persistent rooms using database
+- Authentication system
 - Redis for WebSocket scaling
 - Horizontal scaling support
 
@@ -203,7 +223,7 @@ sync_state | Server → Client | Sync video state |
 
 - WebSocket real-time communication
 - Room-based architecture
-- State synchronization
+- Video state synchronization
 - YouTube IFrame API
 - Event broadcasting with Socket.IO
 
@@ -211,6 +231,5 @@ sync_state | Server → Client | Sync video state |
 
 # 👨‍💻 Author
 
-**Utkarsh Barnwal**
-
+**Utkarsh Barnwal**  
 BTech Student | Full Stack Developer
