@@ -12,11 +12,17 @@ function setupSocketServer(httpServer) {
   if (!rooms[lobbyId]) {
     rooms[lobbyId] = {
       host: socket.id,
-      participants: {}
+      participants: {},
+      state: {
+    videoId: null,
+    time: 0,
+    playing: false
+  }
     }
   }
 
   rooms[lobbyId].participants[socket.id] = {
+    socketId: socket.id,
     username: username,
     role: "host"
   }
@@ -45,6 +51,7 @@ socket.on("join_room", ({code, username})=>{
     socket.join(code)
 
   rooms[code].participants[socket.id] = {
+    socketId: socket.id,
     username: username,
     role: "participant"
   }
@@ -54,6 +61,9 @@ socket.on("join_room", ({code, username})=>{
     "participants_list",
     Object.values(rooms[code].participants)
   )
+    if (rooms[code].state) {
+    socket.emit("sync_state", rooms[code].state)
+  }
     
 })
 socket.on("get_participant",({ roomId})=>{
@@ -66,6 +76,74 @@ socket.on("get_participant",({ roomId})=>{
 
   socket.emit("participants_list", participants)
 })
+socket.on("change_video", ({ roomId, videoId }) => {
+   rooms[roomId].state.videoId = videoId
+  rooms[roomId].state.time = 0
+  rooms[roomId].state.playing = false
+
+  io.to(roomId).emit("change_video", videoId);
+
+});
+socket.on("play", ({ roomId, time }) => {
+    const user = rooms[roomId].participants[socket.id]
+      if (user.role === "participant") return
+   rooms[roomId].state.time = time;
+  rooms[roomId].state.playing = true;
+  socket.to(roomId).emit("play", { time });
+});
+
+socket.on("pause", ({ roomId, time }) => {
+   rooms[roomId].state.time = time;
+  rooms[roomId].state.playing = true;
+  socket.to(roomId).emit("pause", { time });
+});
+
+socket.on("seek", ({ roomId, time }) => {
+  socket.to(roomId).emit("seek", { time });
+});
+
+socket.on("assign_role", ({ roomId, userId, role }) => {
+
+  const room = rooms[roomId]
+
+  if (socket.id !== room.host) return
+
+  room.participants[userId].role = role
+
+  io.to(roomId).emit(
+    "participants_list",
+    Object.values(room.participants)
+  )
+
+})
+
+socket.on("remove_participant", ({ roomId, userId }) => {
+
+  const room = rooms[roomId];
+
+  if (!room) return;
+
+  // only host can remove
+  if (socket.id !== room.host) return;
+
+  // remove user
+  delete room.participants[userId];
+
+  // force the user to leave the room
+  const userSocket = io.sockets.sockets.get(userId);
+
+  if (userSocket) {
+    userSocket.leave(roomId);
+    userSocket.emit("kicked"); // notify kicked user
+  }
+
+  // update participant list
+  io.to(roomId).emit(
+    "participants_list",
+    Object.values(room.participants)
+  );
+
+});
 
   socket.on("disconnect", () => {
 
