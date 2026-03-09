@@ -4,8 +4,8 @@ import http from "http";
 import setupSocketServer from "./src/socket/socket.js";
 import logger from "./src/logger/logger.js";
 config();
-const PORT = process.env.PORT;
 
+const PORT = process.env.PORT | 3000;
 const httpServer = http.createServer(app);
 setupSocketServer(httpServer);
 
